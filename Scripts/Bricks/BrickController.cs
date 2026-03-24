@@ -61,6 +61,7 @@ public class BrickController : MonoBehaviour
     private Coroutine _hitFlashCo;
     private float    _elapsedTime;
     private bool     _waveEnabled = true;
+    private bool     _shieldIntact = false;
 
     // 중력장 전용
     public  float GravityRadius    = 2.5f;
@@ -92,6 +93,7 @@ public class BrickController : MonoBehaviour
         _wavePhaseOffset = phaseOffset;
         _basePosition  = transform.position;
         _moveOriginX   = transform.position.x;
+        _shieldIntact  = (type == BrickType.Shielded);
 
         if (_sprite) _sprite.color = color;
         UpdateSprite();
@@ -156,11 +158,14 @@ public class BrickController : MonoBehaviour
         if (IsDestroyed) return;
 
         // 실드 벽돌: 관통볼이 아니면 1회 무적
-        if (_type == BrickType.Shielded && !isPierce)
+        if (_type == BrickType.Shielded && _shieldIntact && !isPierce)
         {
+            _shieldIntact = false;
             ShowShieldBreakFX();
             return;
         }
+
+        GameSceneController.Instance?.NotifyBrickHit();
 
         CurrentHp -= dmg;
         GameManager.Instance?.AddCombo();
