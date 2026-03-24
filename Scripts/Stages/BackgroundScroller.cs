@@ -67,11 +67,11 @@ public class BackgroundScroller : MonoBehaviour
         StageData sd = StageDatabase.GetStage(
             GameManager.Instance?.CurrentStageIndex ?? 0);
 
-        ScrollLayer(ref _starFarLayer,   sd.BgScrollSpeed * 0.20f, dt);
-        ScrollLayer(ref _starMidLayer,   sd.BgScrollSpeed * 0.45f, dt);
-        ScrollLayer(ref _starNearLayer,  sd.BgScrollSpeed * 0.80f, dt);
-        ScrollLayer(ref _nebulaLayer,    sd.BgScrollSpeed * 0.35f, dt);
-        ScrollLayer(ref _celestialLayer, sd.BgScrollSpeed * 0.60f, dt);
+        ScrollLayerStep(ref _starFarLayer,   sd.BgScrollSpeed * 0.20f, dt);
+        ScrollLayerStep(ref _starMidLayer,   sd.BgScrollSpeed * 0.45f, dt);
+        ScrollLayerStep(ref _starNearLayer,  sd.BgScrollSpeed * 0.80f, dt);
+        ScrollLayerStep(ref _nebulaLayer,    sd.BgScrollSpeed * 0.35f, dt);
+        ScrollLayerStep(ref _celestialLayer, sd.BgScrollSpeed * 0.60f, dt);
 
         // 3D 시차: 패들 위치 기준 미세 x 이동
         ApplyParallax();
@@ -85,7 +85,7 @@ public class BackgroundScroller : MonoBehaviour
         }
     }
 
-    private void ScrollLayer(ref ScrollLayer layer, float speed, float dt)
+    private void ScrollLayerStep(ref ScrollLayer layer, float speed, float dt)
     {
         if (layer.Root == null) return;
         Vector3 p = layer.Root.position;
