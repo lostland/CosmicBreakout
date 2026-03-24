@@ -38,7 +38,7 @@ public class ItemDrop : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Paddle"))
+        if (other.GetComponent<PaddleController>() != null || HasTag(other.gameObject, "Paddle"))
         {
             ItemManager.Instance?.ActivateItem(Type);
             AudioManager.Instance?.PlaySFX(SFXType.ItemPickup);
@@ -47,10 +47,15 @@ public class ItemDrop : MonoBehaviour
                 transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
-        else if (other.CompareTag("DeathZone"))
+        else if (HasTag(other.gameObject, "DeathZone"))
         {
             Destroy(gameObject);
         }
+    }
+
+    private bool HasTag(GameObject obj, string tagName)
+    {
+        return obj != null && obj.tag == tagName;
     }
 }
 
@@ -195,7 +200,7 @@ public class ItemManager : MonoBehaviour
 
             // 공격 관련
             case ItemType.Drone:
-                DroneManager.Instance?.SpawnDrone(10f);
+                SatelliteManager.Instance?.SpawnDrone(10f);
                 break;
             case ItemType.SlowMotion:
                 StartCoroutine(SlowMotionRoutine(6f));

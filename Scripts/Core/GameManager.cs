@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
+using System.Linq;
 
 /// <summary>
 /// 전체 게임 상태를 관리하는 핵심 싱글톤.
@@ -103,21 +104,21 @@ public class GameManager : MonoBehaviour
         OnCoinsChanged?.Invoke(SessionCoins);
 
         ChangeState(GameState.Playing);
-        SceneManager.LoadScene("GameScene");
+        LoadSceneWithFallback("GameScene");
     }
 
     public void ReturnToMain()
     {
         Time.timeScale = 1f;
         ChangeState(GameState.MainMenu);
-        SceneManager.LoadScene("MainMenu");
+        LoadSceneWithFallback("MainMenu");
     }
 
     public void ReturnToStageSelect()
     {
         Time.timeScale = 1f;
         ChangeState(GameState.StageSelect);
-        SceneManager.LoadScene("StageSelect");
+        LoadSceneWithFallback("StageSelect");
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -225,5 +226,20 @@ public class GameManager : MonoBehaviour
             return;
         }
         StartLevel(nextStage, nextLevel);
+    }
+
+    private void LoadSceneWithFallback(string preferredScene)
+    {
+        bool exists = Enumerable.Range(0, SceneManager.sceneCountInBuildSettings)
+            .Select(SceneUtility.GetScenePathByBuildIndex)
+            .Any(p => p.EndsWith(preferredScene + ".unity", StringComparison.OrdinalIgnoreCase));
+
+        if (exists)
+        {
+            SceneManager.LoadScene(preferredScene);
+            return;
+        }
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

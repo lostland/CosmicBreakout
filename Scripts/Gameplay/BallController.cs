@@ -113,7 +113,7 @@ public class BallController : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         // 패들 충돌
-        if (col.gameObject.CompareTag("Paddle"))
+        if (col.gameObject.GetComponent<PaddleController>() != null || HasTag(col.gameObject, "Paddle"))
         {
             HandlePaddleHit(col);
             SpawnFX(_paddleHitFX, transform.position);
@@ -122,7 +122,7 @@ public class BallController : MonoBehaviour
         }
 
         // 벽 충돌
-        if (col.gameObject.CompareTag("Wall"))
+        if (HasTag(col.gameObject, "Wall"))
         {
             SpawnFX(_wallHitFX, col.contacts[0].point);
             AudioManager.Instance?.PlaySFX(SFXType.BallWallHit);
@@ -130,7 +130,7 @@ public class BallController : MonoBehaviour
         }
 
         // 벽돌 충돌 (관통 모드에서는 물리 반사를 하지 않음)
-        if (col.gameObject.CompareTag("Brick"))
+        if (col.gameObject.GetComponent<BrickController>() != null || HasTag(col.gameObject, "Brick"))
         {
             if (IsPierce)
             {
@@ -187,10 +187,15 @@ public class BallController : MonoBehaviour
     // 화면 아래 이탈
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("DeathZone"))
+        if (HasTag(other.gameObject, "DeathZone"))
         {
             OnBallLost();
         }
+    }
+
+    private bool HasTag(GameObject obj, string tagName)
+    {
+        return obj != null && obj.tag == tagName;
     }
 
     private void OnBallLost()

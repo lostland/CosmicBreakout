@@ -47,8 +47,13 @@ public class LaserProjectile : MonoBehaviour
         }
 
         // 천장/벽에 닿으면 사라짐
-        if (other.CompareTag("Wall") || other.CompareTag("Ceiling"))
+        if (HasTag(other.gameObject, "Wall") || HasTag(other.gameObject, "Ceiling"))
             ReturnToPool();
+    }
+
+    private bool HasTag(GameObject obj, string tagName)
+    {
+        return obj != null && obj.tag == tagName;
     }
 
     private void ReturnToPool()
