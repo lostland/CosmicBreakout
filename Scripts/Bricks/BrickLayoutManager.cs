@@ -129,7 +129,7 @@ public class BrickLayoutManager : MonoBehaviour
         BuildFortress(); // 외벽 + 보스 코어
         // 중앙에 보스 코어 배치
         Vector3 bossPos = new Vector3(_layoutCenterX, _layoutTopY - 2f, 0f);
-        if (_bossCoreP refab != null)
+        if (_bossCorePrefab != null)
         {
             _bossCore = Instantiate(_bossCorePrefab, bossPos, Quaternion.identity, transform);
             _bossCore.Init(BrickController.BrickType.BossCore, 20,
