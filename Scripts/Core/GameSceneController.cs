@@ -10,6 +10,8 @@ using System.Collections;
 /// </summary>
 public class GameSceneController : MonoBehaviour
 {
+    public static GameSceneController Instance { get; private set; }
+
     [Header("References")]
     [SerializeField] BrickLayoutManager _layoutMgr;
     [SerializeField] PaddleController   _paddle;
@@ -32,6 +34,7 @@ public class GameSceneController : MonoBehaviour
     // ═════════════════════════════════════════════════════════════
     void Start()
     {
+        Instance = this;
         var gm = GameManager.Instance;
         if (gm == null) return;
 
@@ -56,6 +59,7 @@ public class GameSceneController : MonoBehaviour
 
     void OnDestroy()
     {
+        if (Instance == this) Instance = null;
         GameManager.OnGameOver -= OnGameOver;
     }
 

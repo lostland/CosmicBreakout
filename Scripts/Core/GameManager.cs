@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
     public void SpendCoins(long amount)
     {
         var data = SaveManager.Instance.Data;
-        data.TotalCoins = Mathf.Max(0, (int)(data.TotalCoins - amount));
+        data.TotalCoins = Math.Max(0L, data.TotalCoins - amount);
         SaveManager.Instance.Save();
         OnCoinsChanged?.Invoke(data.TotalCoins);
     }
@@ -195,12 +195,10 @@ public class GameManager : MonoBehaviour
         // 영구 저장: 코인 적립 + 진행도 기록
         var data = SaveManager.Instance.Data;
         data.TotalCoins    += SessionCoins;
-        int playedMax       = CurrentStageIndex * 5 + CurrentLevelIndex;
-        if (playedMax + 1 > data.UnlockedStages * 5 + data.GetLevelProgress(CurrentStageIndex))
-            data.SetLevelProgress(CurrentStageIndex, CurrentLevelIndex + 1);
+        data.SetLevelProgress(CurrentStageIndex, CurrentLevelIndex + 1);
         // 다음 큰 스테이지 해금
         if (CurrentLevelIndex == 4 && CurrentStageIndex + 1 > data.UnlockedStages)
-            data.UnlockedStages = CurrentStageIndex + 1;
+            data.UnlockedStages = Mathf.Min(CurrentStageIndex + 1, StageDatabase.StageCount - 1);
         SaveManager.Instance.Save();
     }
 
