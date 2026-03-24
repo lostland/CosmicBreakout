@@ -195,7 +195,7 @@ public class ItemManager : MonoBehaviour
 
             // 공격 관련
             case ItemType.Drone:
-                DroneManager.Instance?.SpawnDrone(10f);
+                SatelliteManager.Instance?.SpawnDrone(10f);
                 break;
             case ItemType.SlowMotion:
                 StartCoroutine(SlowMotionRoutine(6f));
