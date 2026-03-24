@@ -25,7 +25,7 @@ public class LaserProjectile : MonoBehaviour
         if (_rb)
         {
             _rb.gravityScale = 0f;
-            _rb.velocity     = transform.up * _speed;
+            _rb.linearVelocity     = transform.up * _speed;
         }
     }
 

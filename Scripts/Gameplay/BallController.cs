@@ -37,7 +37,7 @@ public class BallController : MonoBehaviour
     public bool  IsLaunched   { get; private set; }
     public bool  IsPierce     { get; private set; }
     public bool  IsExplosive  { get; private set; }
-    public float CurrentSpeed => _rb.velocity.magnitude;
+    public float CurrentSpeed => _rb.linearVelocity.magnitude;
 
     private Rigidbody2D _rb;
     private CircleCollider2D _col;
@@ -73,7 +73,7 @@ public class BallController : MonoBehaviour
         }
 
         // 속도 보정: 최소 속도 유지 (물리 감쇠로 멈추는 현상 방지)
-        if (IsLaunched && _rb.velocity.sqrMagnitude < 0.1f)
+        if (IsLaunched && _rb.linearVelocity.sqrMagnitude < 0.1f)
         {
             Launch(Vector2.up);
         }
@@ -91,7 +91,7 @@ public class BallController : MonoBehaviour
         _paddle       = paddle;
         _attached     = true;
         IsLaunched    = false;
-        _rb.velocity  = Vector2.zero;
+        _rb.linearVelocity  = Vector2.zero;
         _attachOffset = transform.position - paddle.position;
         _attachOffset.y = Mathf.Abs(_attachOffset.y);
     }
@@ -103,7 +103,7 @@ public class BallController : MonoBehaviour
         IsLaunched = true;
         float speed = _baseSpeed * _speedMult * StageMult;
         speed = Mathf.Clamp(speed, _baseSpeed * 0.5f, _maxSpeed);
-        _rb.velocity = direction.normalized * speed;
+        _rb.linearVelocity = direction.normalized * speed;
     }
 
     // ═════════════════════════════════════════════════════════════
@@ -156,12 +156,12 @@ public class BallController : MonoBehaviour
 
         // 각도: 중앙=90도, 끝=30도 (최소 30도 유지)
         float angle   = Mathf.Lerp(75f, 20f, Mathf.Abs(t));
-        float xSign   = Mathf.Sign(t == 0 ? _rb.velocity.x : t);
+        float xSign   = Mathf.Sign(t == 0 ? _rb.linearVelocity.x : t);
         float rad     = angle * Mathf.Deg2Rad;
         Vector2 newDir = new Vector2(xSign * Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
 
         float speed = Mathf.Clamp(CurrentSpeed, _baseSpeed * _speedMult, _maxSpeed);
-        _rb.velocity = newDir * speed;
+        _rb.linearVelocity = newDir * speed;
 
         // 강타 효과 (패들 끝)
         if (Mathf.Abs(t) > 0.8f)
@@ -170,7 +170,7 @@ public class BallController : MonoBehaviour
 
     private void CorrectFlatAngle()
     {
-        Vector2 v = _rb.velocity;
+        Vector2 v = _rb.linearVelocity;
         if (v.sqrMagnitude < 0.01f) return;
 
         float angleDeg = Mathf.Abs(Vector2.Angle(v, Vector2.right));
@@ -180,7 +180,7 @@ public class BallController : MonoBehaviour
             float sign  = v.y >= 0 ? 1f : -1f;
             float newY  = Mathf.Sin(_minAngleDeg * Mathf.Deg2Rad) * v.magnitude * sign;
             float newX  = Mathf.Sqrt(Mathf.Max(0f, v.sqrMagnitude - newY * newY)) * Mathf.Sign(v.x);
-            _rb.velocity = new Vector2(newX, newY);
+            _rb.linearVelocity = new Vector2(newX, newY);
         }
     }
 
@@ -196,7 +196,7 @@ public class BallController : MonoBehaviour
     private void OnBallLost()
     {
         IsLaunched = false;
-        _rb.velocity = Vector2.zero;
+        _rb.linearVelocity = Vector2.zero;
         BallManager.Instance?.OnBallLost(this);
     }
 
@@ -248,12 +248,12 @@ public class BallController : MonoBehaviour
         float old = _speedMult;
         _speedMult = mult;
         // 현재 속도 즉시 반영
-        if (_rb.velocity.sqrMagnitude > 0.01f)
-            _rb.velocity = _rb.velocity.normalized * (_baseSpeed * _speedMult * StageMult);
+        if (_rb.linearVelocity.sqrMagnitude > 0.01f)
+            _rb.linearVelocity = _rb.linearVelocity.normalized * (_baseSpeed * _speedMult * StageMult);
         yield return new WaitForSeconds(duration);
         _speedMult = old;
-        if (_rb.velocity.sqrMagnitude > 0.01f)
-            _rb.velocity = _rb.velocity.normalized * (_baseSpeed * _speedMult * StageMult);
+        if (_rb.linearVelocity.sqrMagnitude > 0.01f)
+            _rb.linearVelocity = _rb.linearVelocity.normalized * (_baseSpeed * _speedMult * StageMult);
     }
 
     // ═════════════════════════════════════════════════════════════
@@ -283,9 +283,9 @@ public class BallController : MonoBehaviour
         clone._speedMult = _speedMult;
         // 복제된 공은 약간 다른 방향으로 발사
         float angle = Random.Range(-30f, 30f);
-        Vector2 dir = Quaternion.Euler(0, 0, angle) * _rb.velocity.normalized;
+        Vector2 dir = Quaternion.Euler(0, 0, angle) * _rb.linearVelocity.normalized;
         clone.IsLaunched = true;
-        clone._rb.velocity = dir * CurrentSpeed;
+        clone._rb.linearVelocity = dir * CurrentSpeed;
         return clone;
     }
 }
