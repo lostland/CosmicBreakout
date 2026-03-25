@@ -34,6 +34,13 @@ public class SaveManager : MonoBehaviour
         {
             string json = File.ReadAllText(_savePath);
             Data = JsonUtility.FromJson<SaveData>(json);
+            if (Data == null)
+            {
+                Data = new SaveData();
+                Save();
+                return;
+            }
+            Data.Normalize();
         }
         else
         {
@@ -93,5 +100,23 @@ public class SaveData
     {
         if (!IsStageUnlocked(stageIndex)) return false;
         return levelIndex <= StageLevelProgress[stageIndex];
+    }
+
+    public void Normalize()
+    {
+        if (StageLevelProgress == null || StageLevelProgress.Length != 5)
+        {
+            int[] normalized = new int[5] { 0, 0, 0, 0, 0 };
+            if (StageLevelProgress != null)
+            {
+                int copyLen = Mathf.Min(StageLevelProgress.Length, normalized.Length);
+                Array.Copy(StageLevelProgress, normalized, copyLen);
+            }
+            StageLevelProgress = normalized;
+        }
+
+        UnlockedStages = Mathf.Clamp(UnlockedStages, 0, StageLevelProgress.Length - 1);
+        for (int i = 0; i < StageLevelProgress.Length; i++)
+            StageLevelProgress[i] = Mathf.Clamp(StageLevelProgress[i], 0, 5);
     }
 }
