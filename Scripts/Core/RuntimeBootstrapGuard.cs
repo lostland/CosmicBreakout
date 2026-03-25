@@ -76,6 +76,7 @@ public class RuntimeBootstrapGuard : MonoBehaviour
     {
         EnsureSingletonObject<GameManager>("GameManager");
         EnsureSingletonObject<SaveManager>("SaveManager");
+        EnsureSingletonObject<AudioManager>("AudioManager");
     }
 
     private static void EnsureSingletonObject<T>(string objectName) where T : Component
