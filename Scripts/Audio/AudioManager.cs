@@ -46,6 +46,7 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        EnsureAudioSources();
         BuildSFXMap();
         PreWarmPool();
         ApplyVolumeSettings();
@@ -72,7 +73,7 @@ public class AudioManager : MonoBehaviour
         if (stageIndex == _currentStage) return;
         _currentStage = stageIndex;
 
-        AudioClip clip = stageIndex >= 0 && stageIndex < _stageBgm.Length
+        AudioClip clip = _stageBgm != null && stageIndex >= 0 && stageIndex < _stageBgm.Length
                          ? _stageBgm[stageIndex]
                          : _mainMenuBgm;
         StartCoroutine(CrossfadeBGM(clip));
@@ -180,7 +181,7 @@ public class AudioManager : MonoBehaviour
 
     public void ToggleSound(bool on)
     {
-        _bgmSource.mute = !on;
+        if (_bgmSource != null) _bgmSource.mute = !on;
         if (SaveManager.Instance != null)
         {
             SaveManager.Instance.Data.SoundEnabled = on;
@@ -199,6 +200,9 @@ public class AudioManager : MonoBehaviour
 
     private void BuildSFXMap()
     {
+        _sfxMap.Clear();
+        if (_sfxClips == null || _sfxClips.Length == 0) return;
+
         // _sfxClips 배열이 SFXType 열거형 순서와 일치한다고 가정
         var values = (SFXType[])System.Enum.GetValues(typeof(SFXType));
         for (int i = 0; i < values.Length && i < _sfxClips.Length; i++)
@@ -213,5 +217,14 @@ public class AudioManager : MonoBehaviour
             src.playOnAwake = false;
             _sfxPool.Enqueue(src);
         }
+    }
+
+    private void EnsureAudioSources()
+    {
+        if (_bgmSource != null) return;
+        _bgmSource = GetComponent<AudioSource>();
+        if (_bgmSource == null) _bgmSource = gameObject.AddComponent<AudioSource>();
+        _bgmSource.loop = true;
+        _bgmSource.playOnAwake = false;
     }
 }

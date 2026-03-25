@@ -127,7 +127,7 @@ public class RuntimeBootstrapGuard : MonoBehaviour
         sb.AppendLine($"루트 오브젝트 수: {scene.rootCount}");
         sb.AppendLine($"GameManager 존재: {(FindFirstObjectByType<GameManager>() != null ? "예" : "아니오")}");
         sb.AppendLine($"SaveManager 존재: {(FindFirstObjectByType<SaveManager>() != null ? "예" : "아니오")}");
-        sb.AppendLine($"AudioManager 존재: {(FindFirstObjectByType<AudioManager>() != null ? "예" : "아니오")}");
+        sb.AppendLine($"AudioManager 존재: {(FindFirstObjectByType<AudioManager>() != null ? "예" : "아니오")} (선택)");
         if (!string.IsNullOrEmpty(_lastAutoLoadMessage))
             sb.AppendLine($"자동 로드 결과: {_lastAutoLoadMessage}");
         sb.AppendLine();
